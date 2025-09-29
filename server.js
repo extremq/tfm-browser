@@ -2,7 +2,6 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
-
 const PORT = 3000;
 
 const mimeTypes = {
@@ -30,53 +29,50 @@ function getMimeType(filePath) {
 }
 
 const server = http.createServer((req, res) => {
-    let reqUrl = req.url;
-    
-    if (reqUrl === '/') {
-        reqUrl = '/index.html';
-    }
-    
-    const filePath = path.join(__dirname, reqUrl);
-    
-    fs.access(filePath, fs.constants.F_OK, (err) => {
-        if (!err) {
-            // File exists locally, serve it
-            fs.readFile(filePath, (readErr, data) => {
-                if (readErr) {
-                    res.writeHead(500, { 'Content-Type': 'text/plain' });
-                    res.end('Internal Server Error');
-                    return;
-                }
-                
-                const mimeType = getMimeType(filePath);
-                res.writeHead(200, { 
-                    'Content-Type': mimeType,
-                    'Access-Control-Allow-Origin': '*'
+    const reqUrl = req.url;
+
+    if (reqUrl === '/' || reqUrl === '/index.html') {
+        const filePath = path.join(__dirname, 'index.html');
+
+        fs.access(filePath, fs.constants.F_OK, (err) => {
+            if (!err) {
+                fs.readFile(filePath, (readErr, data) => {
+                    if (readErr) {
+                        res.writeHead(500, { 'Content-Type': 'text/plain' });
+                        res.end('Internal Server Error');
+                        return;
+                    }
+
+                    res.writeHead(200, {
+                        'Content-Type': 'text/html',
+                        'Access-Control-Allow-Origin': '*'
+                    });
+                    res.end(data);
                 });
-                res.end(data);
-            });
-        } else {
-            // File doesn't exist locally, try to proxy from Transformice
-            const targetUrl = `https://www.transformice.com${reqUrl}`;
-            console.log(`Proxying request to: ${targetUrl}`);
-            
-            https.get(targetUrl, (proxyRes) => {
-                const mimeType = getMimeType(reqUrl);
-                res.writeHead(proxyRes.statusCode, {
-                    'Content-Type': mimeType,
-                    'Access-Control-Allow-Origin': '*'
-                });
-                proxyRes.pipe(res);
-            }).on('error', (proxyErr) => {
-                console.error(`Proxy error: ${proxyErr.message}`);
+            } else {
                 res.writeHead(404, { 'Content-Type': 'text/plain' });
-                res.end('File not found locally or on remote server');
+                res.end('index.html not found');
+            }
+        });
+    } else {
+        const targetUrl = `https://www.transformice.com${reqUrl}`;
+        console.log(`Proxying request to: ${targetUrl}`);
+
+        https.get(targetUrl, (proxyRes) => {
+            const mimeType = getMimeType(reqUrl);
+            res.writeHead(proxyRes.statusCode, {
+                'Content-Type': mimeType,
+                'Access-Control-Allow-Origin': '*'
             });
-        }
-    });
+            proxyRes.pipe(res);
+        }).on('error', (proxyErr) => {
+            console.error(`Proxy error: ${proxyErr.message}`);
+            res.writeHead(404, { 'Content-Type': 'text/plain' });
+            res.end('File not found on remote server');
+        });
+    }
 });
 
 server.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}/`);
-    console.log('Serving local files and proxying to transformice.com');
 });
