@@ -26,39 +26,60 @@
             websockifyIp = "localhost:8000";
         }
 
-        // https://github.com/ruffle-rs/ruffle/issues/1486#issuecomment-1408246857
-        // (function (originalFetch) {
-        //     const changeUrl = function (url) {
-        //         console.log('Original URL:', url);
+        (function (originalFetch) {
+            const changeUrl = function (url) {
+                console.log('Original URL:', url);
+                // Rewrite transformice.com URLs to proxy server (change to localhost:3000 if you run server.js)
+                if (url.includes('transformice.com')) {
+                    const proxyUrl = 'https://tfm-resource-proxy.vercel.app/api/proxy';
+                    const path = new URL(url).pathname;
+                    console.log('Proxy URL:', proxyUrl);
+                    console.log('Original path:', path);
+                    return {
+                        proxyUrl: proxyUrl,
+                        path: path
+                    };
+                }
+                return url;
+            };
 
-        //         // Rewrite transformice.com URLs to local server
-        //         if (url.includes('transformice.com')) {
-        //             const newUrl = url.replace(/https?:\/\/(www\.)?transformice\.com/g, 'http://localhost:3000');
-        //             console.log('Rewritten URL:', newUrl);
-        //             return newUrl;
-        //         }
+            window.fetch = function () {
+                let args = Array.from(arguments);
+                let url, options = {};
 
-        //         return url;
-        //     };
-        //     window.fetch = function () {
-        //         let a = Array.from(arguments);
-        //         if (typeof (a[0]) === "string") {
-        //             //Argument to fetch() call is a raw URL string
-        //             a[0] = changeUrl(a[0]);
-        //         } else if (a[0] && typeof (a[0].url) === "string") {
-        //             //Argument to fetch() call is a request object
-        //             //HACK: This replaces the entire request object with an URL
-        //             //      because the Request.url property is readonly.
-        //             //      This is appropriate for GET requests only.
-        //             const changedUrl = changeUrl(a[0].url);
-        //             if (changedUrl !== a[0].url) {
-        //                 a[0] = changedUrl;
-        //             }
-        //         }
-        //         return originalFetch.apply(window, a);
-        //     };
-        // })(window.fetch);
+                if (typeof args[0] === "string") {
+                    // Argument is a raw URL string
+                    const changed = changeUrl(args[0]);
+                    if (typeof changed !== 'string') {
+                        url = changed.proxyUrl;
+                        options = {
+                            ...(args[1] || {}),
+                            headers: {
+                                ...(args[1]?.headers || {}),
+                                'Transformice-Url': changed.path
+                            }
+                        };
+                        args = [url, options];
+                    }
+                } else if (args[0] && typeof args[0].url === "string") {
+                    // Argument is a Request object
+                    const changed = changeUrl(args[0].url);
+                    if (typeof changed !== 'string') {
+                        url = changed.proxyUrl;
+                        options = {
+                            method: args[0].method,
+                            headers: {
+                                ...Object.fromEntries(args[0].headers.entries()),
+                                'Transformice-Url': changed.path
+                            }
+                        };
+                        args = [url, options];
+                    }
+                }
 
+                return originalFetch.apply(window, args);
+            };
+        })(window.fetch);
         function generateSocketProxyConfig() {
             const ipRoutes = [
                 ["51.38.60.113", "a"],
