@@ -54,7 +54,6 @@
             };
         })(window.fetch);
 
-
         function generateSocketProxyConfig() {
             const ipRoutes = [
                 ["51.38.60.113", "a"],
@@ -64,7 +63,7 @@
                 ["57.128.182.226", "e"],
                 ["54.36.208.147", "f"],
                 ["54.36.103.104", "g"],
-                ["54.36.103.206", "h"],,
+                ["54.36.103.206", "h"],
             ];
 
             const ports = [11801];
@@ -86,21 +85,14 @@
         window.RufflePlayer.config = {
             autoplay: "on",
             socketProxy: generateSocketProxyConfig(),
-            letterbox: "off"
+            letterbox: "off",
+            unmuteOverlay: "hidden"
         };
 
-        var swfobject = {};
+        var ruffle = window.RufflePlayer.newest();
+        var player = Object.assign(document.getElementById('ruffle').appendChild(ruffle.createPlayer()), { style: "width: 100vw; height: 100vh;" });
 
-        swfobject.embedSWF = function (url, cont) {
-            var ruffle = window.RufflePlayer.newest();
-            var player = Object.assign(document.getElementById(cont).appendChild(ruffle.createPlayer()), { style: "width: 100vw; height: 100vh;" });
-
-            player.load({ url: url });
-        }
-
-        swfobject.embedSWF('TransformiceChargeur.swf', 'ruffle');
-
-
+        player.load({ url: 'https://transformice.com/TransformiceChargeur.swf' });
     </script>
 </body>
 
