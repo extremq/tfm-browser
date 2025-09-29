@@ -21,6 +21,11 @@
     <div id='ruffle'></div>
     <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
     <script>
+        let websockifyIp = prompt("Enter websockify IP:", "localhost:8000");
+        if (websockifyIp == null || websockifyIp == "") {
+            websockifyIp = "localhost:8000";
+        }
+
         // https://github.com/ruffle-rs/ruffle/issues/1486#issuecomment-1408246857
         (function (originalFetch) {
             const changeUrl = function (url) {
@@ -74,7 +79,7 @@
                     proxyConfigs.push({
                         host: ipRoute[0],
                         port: port[0],
-                        proxyUrl: "ws://localhost:8000/?token=" + ipRoute[1] + "-" + port[1]
+                        proxyUrl: "ws://" + websockifyIp + "/?token=" + ipRoute[1] + "-" + port[1]
                     });
                 });
             });
