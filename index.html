@@ -21,7 +21,12 @@
     <div id='ruffle'></div>
     <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
     <script>
-        let websockifyIp = prompt("Enter websockify IP:", "localhost:8000");
+        let tfmResourceProxy = prompt("Enter TFM resource proxy ip/hostname:", "https://tfm-resource-proxy.vercel.app/api/proxy");
+        if (tfmResourceProxy == null || tfmResourceProxy == "") {
+            tfmResourceProxy = "https://tfm-resource-proxy.vercel.app/api/proxy";
+        }
+
+        let websockifyIp = prompt("Enter websockify ip/hostname:", "localhost:8000");
         if (websockifyIp == null || websockifyIp == "") {
             websockifyIp = "localhost:8000";
         }
