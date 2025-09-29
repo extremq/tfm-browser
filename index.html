@@ -21,12 +21,12 @@
     <div id='ruffle'></div>
     <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
     <script>
-        let tfmResourceProxy = prompt("Enter TFM resource proxy ip/hostname:", "https://tfm-resource-proxy.vercel.app/api/proxy");
+        let tfmResourceProxy = prompt("Enter TFM resource proxy address:", "https://tfm-resource-proxy.vercel.app/api/proxy");
         if (tfmResourceProxy == null || tfmResourceProxy == "") {
             tfmResourceProxy = "https://tfm-resource-proxy.vercel.app/api/proxy";
         }
 
-        let websockifyIp = prompt("Enter websockify ip/hostname:", "localhost:8000");
+        let websockifyIp = prompt("Enter websockify address:", "localhost:8000");
         if (websockifyIp == null || websockifyIp == "") {
             websockifyIp = "localhost:8000";
         }
@@ -34,7 +34,7 @@
         (function (originalFetch) {
             const changeUrl = function (url) {
                 console.log('Original URL:', url);
-                // Rewrite transformice.com URLs to proxy server (change to localhost:3000 if you run server.js)
+                // Rewrite transformice.com URLs to proxy server (change to localhost:3000 if you run server.js!!!)
                 if (url.includes('transformice.com')) {
                     const proxyUrl = 'https://tfm-resource-proxy.vercel.app/api/proxy';
                     const path = new URL(url).pathname;
