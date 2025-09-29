@@ -27,37 +27,37 @@
         }
 
         // https://github.com/ruffle-rs/ruffle/issues/1486#issuecomment-1408246857
-        (function (originalFetch) {
-            const changeUrl = function (url) {
-                console.log('Original URL:', url);
+        // (function (originalFetch) {
+        //     const changeUrl = function (url) {
+        //         console.log('Original URL:', url);
 
-                // Rewrite transformice.com URLs to local server
-                if (url.includes('transformice.com')) {
-                    const newUrl = url.replace(/https?:\/\/(www\.)?transformice\.com/g, 'http://localhost:3000');
-                    console.log('Rewritten URL:', newUrl);
-                    return newUrl;
-                }
+        //         // Rewrite transformice.com URLs to local server
+        //         if (url.includes('transformice.com')) {
+        //             const newUrl = url.replace(/https?:\/\/(www\.)?transformice\.com/g, 'http://localhost:3000');
+        //             console.log('Rewritten URL:', newUrl);
+        //             return newUrl;
+        //         }
 
-                return url;
-            };
-            window.fetch = function () {
-                let a = Array.from(arguments);
-                if (typeof (a[0]) === "string") {
-                    //Argument to fetch() call is a raw URL string
-                    a[0] = changeUrl(a[0]);
-                } else if (a[0] && typeof (a[0].url) === "string") {
-                    //Argument to fetch() call is a request object
-                    //HACK: This replaces the entire request object with an URL
-                    //      because the Request.url property is readonly.
-                    //      This is appropriate for GET requests only.
-                    const changedUrl = changeUrl(a[0].url);
-                    if (changedUrl !== a[0].url) {
-                        a[0] = changedUrl;
-                    }
-                }
-                return originalFetch.apply(window, a);
-            };
-        })(window.fetch);
+        //         return url;
+        //     };
+        //     window.fetch = function () {
+        //         let a = Array.from(arguments);
+        //         if (typeof (a[0]) === "string") {
+        //             //Argument to fetch() call is a raw URL string
+        //             a[0] = changeUrl(a[0]);
+        //         } else if (a[0] && typeof (a[0].url) === "string") {
+        //             //Argument to fetch() call is a request object
+        //             //HACK: This replaces the entire request object with an URL
+        //             //      because the Request.url property is readonly.
+        //             //      This is appropriate for GET requests only.
+        //             const changedUrl = changeUrl(a[0].url);
+        //             if (changedUrl !== a[0].url) {
+        //                 a[0] = changedUrl;
+        //             }
+        //         }
+        //         return originalFetch.apply(window, a);
+        //     };
+        // })(window.fetch);
 
         function generateSocketProxyConfig() {
             const ipRoutes = [
