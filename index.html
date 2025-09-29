@@ -36,7 +36,7 @@
                 console.log('Original URL:', url);
                 // Rewrite transformice.com URLs to proxy server (change to localhost:3000 if you run server.js!!!)
                 if (url.includes('transformice.com')) {
-                    const proxyUrl = 'https://tfm-resource-proxy.vercel.app/api/proxy';
+                    const proxyUrl = tfmResourceProxy;
                     const path = new URL(url).pathname;
                     console.log('Proxy URL:', proxyUrl);
                     console.log('Original path:', path);
