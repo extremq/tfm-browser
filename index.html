@@ -1,0 +1,107 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset='utf8'>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id='ruffle'></div>
+    <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
+    <script>
+        // https://github.com/ruffle-rs/ruffle/issues/1486#issuecomment-1408246857
+        (function (originalFetch) {
+            const changeUrl = function (url) {
+                console.log('Original URL:', url);
+
+                // Rewrite transformice.com URLs to local server
+                if (url.includes('transformice.com')) {
+                    const newUrl = url.replace(/https?:\/\/(www\.)?transformice\.com/g, 'http://localhost:3000');
+                    console.log('Rewritten URL:', newUrl);
+                    return newUrl;
+                }
+
+                return url;
+            };
+            window.fetch = function () {
+                let a = Array.from(arguments);
+                if (typeof (a[0]) === "string") {
+                    //Argument to fetch() call is a raw URL string
+                    a[0] = changeUrl(a[0]);
+                } else if (a[0] && typeof (a[0].url) === "string") {
+                    //Argument to fetch() call is a request object
+                    //HACK: This replaces the entire request object with an URL
+                    //      because the Request.url property is readonly.
+                    //      This is appropriate for GET requests only.
+                    const changedUrl = changeUrl(a[0].url);
+                    if (changedUrl !== a[0].url) {
+                        a[0] = changedUrl;
+                    }
+                }
+                return originalFetch.apply(window, a);
+            };
+        })(window.fetch);
+
+
+        function generateSocketProxyConfig() {
+            const ipRoutes = [
+                ["51.38.60.113", "a"],
+                ["51.77.132.45", "b"],
+                ["37.187.79.102", "c"],
+                ["213.32.6.141", "d"],
+                ["57.128.182.226", "e"],
+                ["54.36.208.147", "f"],
+                ["54.36.103.104", "g"],
+                ["54.36.103.206", "h"],,
+            ];
+
+            const ports = [11801];
+            const proxyConfigs = [];
+
+            ipRoutes.forEach(ipRoute => {
+                ports.forEach(port => {
+                    proxyConfigs.push({
+                        host: ipRoute[0],
+                        port: port,
+                        proxyUrl: "ws://localhost:8000/?token=" + ipRoute[1]
+                    });
+                });
+            });
+
+            return proxyConfigs;
+        }
+
+        window.RufflePlayer.config = {
+            autoplay: "on",
+            socketProxy: generateSocketProxyConfig(),
+            letterbox: "off"
+        };
+
+        var swfobject = {};
+
+        swfobject.embedSWF = function (url, cont) {
+            var ruffle = window.RufflePlayer.newest();
+            var player = Object.assign(document.getElementById(cont).appendChild(ruffle.createPlayer()), { style: "width: 100vw; height: 100vh;" });
+
+            player.load({ url: url });
+        }
+
+        swfobject.embedSWF('TransformiceChargeur.swf', 'ruffle');
+
+
+    </script>
+</body>
+
+</html>
