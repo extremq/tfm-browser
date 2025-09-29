@@ -19,7 +19,7 @@ This requires that a proxy server is up and running, and Transformice does not h
 Using this, we can actually connect and play!
 
 ## Getting started
-You will be prompted for a resource proxy address and websocket proxy address. You can either self-host or find someone else that hosts them for you.
+You can use [extremq.github.io/tfm-browser](https://extremq.github.io/tfm-browser), but you will be prompted for a resource proxy address and websocket proxy address. You can either self-host or find someone else that hosts them for you.
 See further instructions for self-hosting.
 
 ### Websocket proxy
@@ -34,6 +34,14 @@ Either use the my proxy server, or run the server yourself if mine is down. To h
 
 > [!NOTE]  
 > You can use Vercel to freely host your own proxy server, just fork [extremq/tfm-resource-proxy](https://github.com/extremq/tfm-resource-proxy)
+
+### Docker
+Just do,
+```bash
+docker build -t tfmbrowser
+docker run -p 0.0.0.0:8000:8000 -p 0.0.0.0:3000:3000 tfmbrowser
+```
+then open [localhost:3000](http://locahost:3000).
 
 ## Issues
 Please report any inconsistencies you encounter. We try to maintain a separate Ruffle build that fixes some of them.
