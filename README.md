@@ -26,8 +26,11 @@ Unarchive and once inside the directory, run `python3 setup.py install`. You mig
 
 After installing, come to the Tfmbrowser repo directory and run `websockify 127.0.0.1:8000 --token-plugin TokenFile --token-source proxypaths`.
 
-### Starting the web server
-Run `node sever.js`, open [localhost:3000](http://locahost:3000) and that is it.
+### Resources proxy
+Either use the my proxy server, or run the server yourself if mine is down. To host the server yourself, `node sever.js`, open [localhost:3000](http://locahost:3000) and that is it.
+
+> [!NOTE]  
+> You can use Vercel to freely host your own proxy server, just fork [extremq/tfm-resource-proxy](https://github.com/extremq/tfm-resource-proxy)
 
 ## Issues
 Please report any inconsistencies you encounter. We try to maintain a separate Ruffle build that fixes some of them.
