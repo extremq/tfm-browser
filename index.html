@@ -66,15 +66,15 @@
                 ["54.36.103.206", "h"],
             ];
 
-            const ports = [11801];
+            const ports = [[11801, "1"], [12801, "2"], [13801, "3"], [14801, "4"]];
             const proxyConfigs = [];
 
             ipRoutes.forEach(ipRoute => {
                 ports.forEach(port => {
                     proxyConfigs.push({
                         host: ipRoute[0],
-                        port: port,
-                        proxyUrl: "ws://localhost:8000/?token=" + ipRoute[1]
+                        port: port[0],
+                        proxyUrl: "ws://localhost:8000/?token=" + ipRoute[1] + "-" + port[1]
                     });
                 });
             });
