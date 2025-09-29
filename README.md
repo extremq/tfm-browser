@@ -19,7 +19,10 @@ This requires that a proxy server is up and running, and Transformice does not h
 Using this, we can actually connect and play!
 
 ## Getting started
-### Starting the proxy
+You will be prompted for a resource proxy address and websocket proxy address. You can either self-host or find someone else that hosts them for you.
+See further instructions for self-hosting.
+
+### Websocket proxy
 First, install `websockify`. Download the zip/tar.gz from [the github repo](https://github.com/novnc/websockify/releases).
 
 Unarchive and once inside the directory, run `python3 setup.py install`. You might need administrator access for this.
